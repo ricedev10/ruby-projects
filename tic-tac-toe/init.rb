@@ -8,12 +8,13 @@ def get_position(msg)
     user_input = gets.chomp!
 
     if user_input =~ /^[0-9]+$/
-      return user_input.to_i if new_row >= 1 && new_row <= 3
+      new_row = user_input.to_i
+      return new_row if new_row >= 1 && new_row <= 3
 
       puts 'Must be between 1 and 3'
-    else
-      puts 'Invalid number'
     end
+
+    puts 'Invalid number'
   end
 end
 
