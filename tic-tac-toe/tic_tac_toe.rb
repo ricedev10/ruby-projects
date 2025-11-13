@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'colorize'
+
 # for creating tic-tac-toe games
 class TicTacToe
   def initialize
@@ -42,9 +44,9 @@ class TicTacToe
   def to_xo(value)
     case value
     when 1
-      'x'
+      'x'.colorize(:red)
     when 0
-      'o'
+      'o'.colorize(:green)
     else
       '-'
     end
