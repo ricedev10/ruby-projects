@@ -18,6 +18,19 @@ def get_position(msg)
   end
 end
 
+def should_play_again
+  loop do
+    print "\nPlay again? (y/n) "
+    play_again = gets.chomp!.downcase
+
+    if play_again == 'y'
+      return true
+    elsif play_again == 'n'
+      return false
+    end
+  end
+end
+
 game = TicTacToe.new
 player_turn = 0
 loop do
@@ -42,13 +55,7 @@ loop do
     puts 'Final game: '
     puts game
 
-    play_again = ''
-    loop do
-      print "\nPlay again? (y/n) "
-      play_again = gets.chomp!.downcase
-      break if %w[n y].include?(play_again)
-    end
-    break if play_again == 'n'
+    break unless should_play_again
   end
 
   # alternate turns
