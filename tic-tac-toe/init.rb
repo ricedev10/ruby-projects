@@ -44,7 +44,7 @@ loop do
 
     play_again = ''
     loop do
-      print "\nPlay again? "
+      print "\nPlay again? (y/n) "
       play_again = gets.chomp!.downcase
       break if %w[n y].include?(play_again)
     end
