@@ -37,6 +37,10 @@ class TicTacToe
     @boxes = Array.new(9, nil)
   end
 
+  def full?
+    @boxes.none?(nil)
+  end
+
   def to_s
     board = ''
     i = 1

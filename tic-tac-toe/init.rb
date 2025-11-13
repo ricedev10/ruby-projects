@@ -46,11 +46,16 @@ loop do
     puts 'Spot already taken!'
   end
 
-  # check if anyone has won
+  # check if anyone has won or it is a tie
   winner = game.find_winner
   if winner
     puts "Congrats player #{player_turn == 1 ? 'x' : 'o'}!"
     puts 'Final game: '
+    puts game
+
+    break unless should_play_again
+  elsif game.full?
+    puts "It's a tie!"
     puts game
 
     break unless should_play_again
