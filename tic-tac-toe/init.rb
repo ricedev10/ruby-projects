@@ -54,11 +54,15 @@ loop do
     puts game
 
     break unless should_play_again
+
+    game.clean_board
   elsif game.full?
     puts "It's a tie!"
     puts game
 
     break unless should_play_again
+
+    game.clean_board
   end
 
   # alternate turns
