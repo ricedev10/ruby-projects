@@ -16,6 +16,13 @@ class TicTacToe
     true
   end
 
+  def score_at_index(index, point)
+    return false if @boxes[index]
+
+    @boxes[index] = point
+    true
+  end
+
   def find_winner
     # find straight patterns
     patterns = rows.union(columns).union(crosses)
@@ -32,8 +39,11 @@ class TicTacToe
 
   def to_s
     board = ''
+    i = 1
     rows.each do |row|
-      board += "#{to_xo(row[0])} | #{to_xo(row[1])} | #{to_xo(row[2])}\n"
+      board += "#{to_xo(row[0], i)} | #{to_xo(row[1], i + 1)} | #{to_xo(row[2], i + 2)}\n"
+      i += 3
+      board += "--+---+--\n" if i <= 7
     end
 
     board.chomp
@@ -41,14 +51,14 @@ class TicTacToe
 
   private
 
-  def to_xo(value)
+  def to_xo(value, index)
     case value
     when 1
       'x'.colorize(:red)
     when 0
       'o'.colorize(:green)
     else
-      '-'
+      index.to_s
     end
   end
 

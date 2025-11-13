@@ -9,9 +9,9 @@ def get_position(msg)
 
     if user_input =~ /^[0-9]+$/
       new_row = user_input.to_i
-      return new_row if new_row >= 1 && new_row <= 3
+      return new_row if new_row >= 1 && new_row <= 9
 
-      puts 'Must be between 1 and 3'
+      puts 'Must be between 1 and 9'
     end
 
     puts 'Invalid number'
@@ -40,10 +40,8 @@ loop do
   # get position where user wants to place X/O
   # make sure position is not already filled
   loop do
-    row = get_position('Enter row: ')
-    column = get_position('Enter column: ')
-
-    break if game.score_point(row - 1, column - 1, player_turn)
+    pos = get_position('Enter position: ')
+    break if game.score_at_index(pos - 1, player_turn)
 
     puts 'Spot already taken!'
   end
