@@ -1,103 +1,122 @@
+# frozen_string_literal: true
+
 require 'colorize'
 
-COLORS = %i[
-  black red green yellow blue magenta white
-]
+MAX_ROUNDS = 12
+COLORS = %i[blue red yellow magenta green]
 
-# create random combinations of specified length and values
 class Keypad
-  attr_reader :combo, :count, :values
+  attr_accessor :code
 
-  def initialize(count, values)
-    @count = count
-    @values = values
+  def initialize(code)
+    @code = code
+  end
+
+  def correct_digits(code)
+    sum = 0
+    @code.each_index { |i| sum += 1 if @code[i] == code[i] }
+    sum
+  end
+
+  def contains_digits(code)
+    contains = 0
+
+    i = -1
+    leftover = code.map do |digit|
+      i += 1
+      digit if digit != @code[i]
+    end
+
+    @code.each_index do |i|
+      (contains += 1) if leftover.any?(@code[i]) && !leftover[i].nil?
+    end
+
+    contains
+  end
+end
+
+class ColorKeypad < Keypad
+  def initialize(colors)
+    @colors = colors
     @rng = Random.new
-    @combo = new_combo
+
+    p super generate_new_code
   end
 
-  def new_combo
-    @combo = Array.new(@count) { @values[@rng.rand(@values.count)] }
-  end
-
-  def guess(*combo)
-    combo == @combo
+  def generate_new_code
+    Array.new(4) { |_| @colors[@rng.rand(@colors.count) - 1] }
   end
 end
 
 class Mastermind
-  def initialize(count, colors)
-    @keypad = Keypad.new(count, colors)
-    @colors = colors
+  attr_accessor :rounds_played
+
+  def initialize(colors, max_rounds)
+    @color_keypad = ColorKeypad.new(colors)
+    @max_rounds = max_rounds
+    @rounds_played = 0
   end
 
-  def combo
-    @keypad.combo
+  def play_round(code)
+    return nil if @rounds_played > @max_rounds
+
+    @rounds_played += 1
+    correct = @color_keypad.correct_digits(code)
+    contains = @color_keypad.contains_digits(code)
+
+    [correct, contains]
+  end
+end
+
+class Player
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
   end
 
-  def match(*values)
-    @keypad.guess(*values)
-  end
-
-  def gets_guess
+  def get_guess(msg, check)
     loop do
-      print "\rEnter a guess: "
-      out = gets.chomp!.split(' ')
-      if (out.count == @keypad.count) && out.all? { |value| @keypad.values.any?(value.to_sym) }
-        return out.map(&:to_sym) # { |value| value.to_sym }
-      end
-    end
-  end
-
-  def output_guess(guess)
-    output = ''
-    i = 0
-    correct = true
-    guess.each do |value|
-      color = if value == combo[i]
-                :green
-              elsif combo.any?(value)
-                correct = false
-                :yellow
-              else
-                correct = false
-                :red
-              end
-      output << "#{value.to_s.colorize(color)} "
-      i += 1
-    end
-
-    puts output
-    correct
-  end
-
-  def start
-    puts 'Welcome to mastermind!'
-    puts "Colors: #{@colors}"
-    loop do
-      guess = gets_guess
-      correct = output_guess(guess)
-
-      next unless correct
-
-      puts 'You guessed right! Yay!'
-      break unless play_again
-
-      @keypad.new_combo
-    end
-  end
-
-  def play_again
-    loop do
-      print "\nPlay again? (y/n): "
-      play_again = gets.chomp!
-      if play_again == 'y'
-        return true
-      elsif play_again == 'n'
-        return false
-      end
+      print(msg)
+      guess = check.call(gets)
+      return guess if guess
     end
   end
 end
 
-new_game = Mastermind.new(4, COLORS)
-new_game.start
+class Computer
+  def initialize
+  end
+end
+
+def play(code_count, max_rounds, colors)
+  print "\nEnter player name: "
+  plr = Player.new(gets.chomp!)
+  game = Mastermind.new(colors, max_rounds)
+
+  loop do
+    guess = plr.get_guess(
+      'Enter a guess: ',
+      lambda { |msg|
+        code = msg.split(' ').map!(&:to_sym)
+        code if code.count == code_count && code.all? { |ele| colors.any?(ele) }
+      }
+    )
+
+    round = game.play_round(guess)
+    if round.nil?
+      puts "You lose #{plr.name}! Too many tries"
+      break
+    end
+
+    puts "#{'Correct'.colorize(:green)}: #{round[0]} | #{'Contains'.colorize(:yellow)} #{round[1]}"
+
+    # check if player won the match
+    if round[0] == code_count && round[1] == 0
+      puts "You won #{plr.name}! Congratulations!"
+      break
+    end
+  end
+end
+
+play(4, MAX_ROUNDS, COLORS)
