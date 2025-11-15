@@ -3,7 +3,7 @@
 require 'colorize'
 
 MAX_ROUNDS = 12
-COLORS = %i[blue red yellow magenta green]
+COLORS = %i[blue red yellow magenta green black]
 
 class Keypad
   attr_accessor :code
@@ -60,7 +60,7 @@ class ColorKeypad < Keypad
     @colors = colors
     @rng = Random.new
 
-    p super generate_new_code
+    super generate_new_code
   end
 
   def generate_new_code
@@ -119,6 +119,7 @@ class Computer < Guess
     @guesses = []
     @rng = Random.new
     @colors = colors
+    @combinations = permutations(count)
 
     super
   end
@@ -128,6 +129,17 @@ class Computer < Guess
 
     @guesses << new_guess
     new_guess
+  end
+
+  private
+
+  def permutations(count)
+    possibilities = []
+    @colors.repeated_permutation(count) do |perm|
+      possibilities.push(perm)
+    end
+
+    possibilities
   end
 end
 
