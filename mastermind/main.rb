@@ -30,14 +30,11 @@ class Keypad
     added = []
     code.each_index do |i|
       digit = code[i]
-      if leftover.any?(digit) && added.count(digit) < @code.count(digit)
+      if leftover.any?(digit) && !leftover[i].nil? && added.count(digit) < @code.count(digit)
         contains += 1
         added << digit
       end
     end
-    # correct: blue magenta blue blue
-    # guessed: blue blue.   red. red
-    # negat:   ____ blue.    red red
     #
     # blue red blue magenta
     # red  red.red.  red
@@ -45,6 +42,10 @@ class Keypad
     #
     # . magenta blue magenta yellow
     #
+    #
+    # yellow. yellow green yellow
+    # yellow yellow yellow magenta
+    # ____ _______.  green yellow
 
     contains
   end
