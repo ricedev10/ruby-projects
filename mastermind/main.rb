@@ -19,20 +19,14 @@ class Keypad
   end
 
   def contains_digits(code)
-    contains = 0
-
-    i = -1
-    leftover = @code.map do |digit|
-      i += 1
-      digit if digit != code[i]
-    end
-
+    leftover = negate_code(code)
     added = []
+
+    contains = 0
     code.each_index do |i|
       digit = code[i]
       if leftover.any?(digit) && !leftover[i].nil? && added.count(digit) < @code.count(digit)
-        contains += 1
-        added << digit
+        contains += 1 and added << digit
       end
     end
     #
@@ -48,6 +42,16 @@ class Keypad
     # ____ _______.  green yellow
 
     contains
+  end
+
+  private
+
+  def negate_code(code)
+    leftover = Array.new(@code.count, nil)
+    leftover.each_index do |i|
+      i += 1
+      @code[i] if @code[i] != code[i]
+    end
   end
 end
 
