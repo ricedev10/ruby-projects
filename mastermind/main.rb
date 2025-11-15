@@ -22,14 +22,29 @@ class Keypad
     contains = 0
 
     i = -1
-    leftover = code.map do |digit|
+    leftover = @code.map do |digit|
       i += 1
-      digit if digit != @code[i]
+      digit if digit != code[i]
     end
 
-    @code.each_index do |i|
-      (contains += 1) if leftover.any?(@code[i]) && !leftover[i].nil?
+    added = []
+    code.each_index do |i|
+      digit = code[i]
+      if leftover.any?(digit) && added.count(digit) < @code.count(digit)
+        contains += 1
+        added << digit
+      end
     end
+    # correct: blue magenta blue blue
+    # guessed: blue blue.   red. red
+    # negat:   ____ blue.    red red
+    #
+    # blue red blue magenta
+    # red  red.red.  red
+    # red ___ red   red
+    #
+    # . magenta blue magenta yellow
+    #
 
     contains
   end
@@ -98,17 +113,24 @@ class Computer < Guess
   def initialize(name, colors, count)
     @guesses = []
     @rng = Random.new
+    @colors = colors
 
     super
   end
 
   def guess
-    Array.new(4) { |_| COLORS[@rng.rand(COLORS.count) - 1] }
+    new_guess = Array.new(4, @colors.first)
+
+    @guesses << new_guess
+    new_guess
   end
 end
 
 def play(code_count, max_rounds, colors)
-  print 'Enter player name: '
+  puts 'Welcome to mastermind!'
+  puts 'Guess a 4 color code that consists of the following colors:'
+  puts colors.map(&:to_s).join(' ')
+  print "\nEnter player name: "
   client = Player.new(gets.chomp!, colors, code_count)
   ai = Computer.new('AI', colors, code_count)
   game = Mastermind.new(colors, max_rounds)
