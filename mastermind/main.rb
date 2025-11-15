@@ -68,40 +68,54 @@ class Mastermind
   end
 end
 
-class Player
+class Guess
   attr_reader :name
 
-  def initialize(name)
+  def initialize(name, colors, count)
     @name = name
+    @colors = colors
+    @count = count
   end
 
-  def get_guess(msg, check)
+  def guess
+    Array.new(@count) { |_| @colors[@rng.rand(@colors.count) - 1] }
+  end
+end
+
+class Player < Guess
+  def guess
     loop do
-      print(msg)
-      guess = check.call(gets)
-      return guess if guess
+      print('Enter a guess: ')
+      code = gets.chomp!.split(' ').map!(&:to_sym)
+      return code if code.count == @count && code.all? { |ele| @colors.any?(ele) }
     end
   end
 end
 
-class Computer
-  def initialize
+class Computer < Guess
+  attr_reader :name
+
+  def initialize(name, colors, count)
+    @guesses = []
+    @rng = Random.new
+
+    super
+  end
+
+  def guess
+    Array.new(4) { |_| COLORS[@rng.rand(COLORS.count) - 1] }
   end
 end
 
 def play(code_count, max_rounds, colors)
-  print "\nEnter player name: "
-  plr = Player.new(gets.chomp!)
+  print 'Enter player name: '
+  client = Player.new(gets.chomp!, colors, code_count)
+  ai = Computer.new('AI', colors, code_count)
   game = Mastermind.new(colors, max_rounds)
 
   loop do
-    guess = plr.get_guess(
-      'Enter a guess: ',
-      lambda { |msg|
-        code = msg.split(' ').map!(&:to_sym)
-        code if code.count == code_count && code.all? { |ele| colors.any?(ele) }
-      }
-    )
+    plr = client
+    guess = plr.guess
 
     round = game.play_round(guess)
     if round.nil?
