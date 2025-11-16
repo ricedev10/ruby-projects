@@ -50,8 +50,9 @@ class Keypad
     leftover = Array.new(@code.count, nil)
     leftover.each_index do |i|
       i += 1
-      @code[i] if @code[i] != code[i]
+      leftover[i] = @code[i] if @code[i] != code[i]
     end
+    leftover
   end
 end
 
@@ -60,7 +61,7 @@ class ColorKeypad < Keypad
     @colors = colors
     @rng = Random.new
 
-    super generate_new_code
+    p super generate_new_code
   end
 
   def generate_new_code
@@ -100,6 +101,8 @@ class Guess
   def guess
     Array.new(@count) { |_| @colors[@rng.rand(@colors.count) - 1] }
   end
+
+  def receive_guess(last_guess, correct, contains) end
 end
 
 class Player < Guess
@@ -109,6 +112,10 @@ class Player < Guess
       code = gets.chomp!.split(' ').map!(&:to_sym)
       return code if code.count == @count && code.all? { |ele| @colors.any?(ele) }
     end
+  end
+
+  def receive_guess(_last_guess, correct, contains)
+    puts "#{'Correct'.colorize(:green)}: #{correct} | #{'Contains'.colorize(:yellow)} #{contains}"
   end
 end
 
@@ -120,15 +127,84 @@ class Computer < Guess
     @rng = Random.new
     @colors = colors
     @combinations = permutations(count)
+    @next_guess = [@colors.first, @colors.first, @colors[1], @colors[1]]
+    @must_have = {}
 
     super
   end
 
   def guess
-    new_guess = Array.new(4, @colors.first)
+    # Create the set S of 1,296 possible codes {1111, 1112, ... 6665, 6666}.
+    # Start with initial guess 1122.[a]
+    # Play the guess to get a response of colored and white key pegs.
+    # If the response is four colored key pegs, the game is won, the algorithm terminates.
+    # Otherwise, remove from S any code that would not give that response of colored and white pegs.
+    # The next guess is chosen by the minimax technique, which chooses a guess that has the least worst response score. In this case, a response to a guess is some number of colored and white key pegs, and the score of a response is defined to be the number of codes in S that are still possible even after the response is known. The score of a guess is pessimistically defined to be the worst (maximum) of all its response scores. From the set of guesses with the best (minimum) guess score, select one as the next guess, choosing a code from S whenever possible.[b][c] # rubocop:disable Layout/LineLength
+    # Repeat from Step 3.
+    #
+    @next_guess
+  end
 
-    @guesses << new_guess
-    new_guess
+  def receive_guess(guess, correct, contains)
+    p guess
+    p @combinations.count
+    p "contains #{contains}, correct: #{correct}"
+    @combinations.delete_at(0)
+    if correct.positive? || contains.positive?
+      # remove all combinations that do not contain the guess colors
+      @combinations.select! do |combo|
+        combo.intersect?(guess)
+      end
+      p @combinations.count
+      p 'uh oh'
+    elsif correct.zero? && contains.zero?
+      # remove all combinations that DO contain the guess colors
+      @combinations.reject! do |combo|
+        combo.intersect?(guess)
+      end
+      p @combinations.count
+      p(correct, contains)
+      p 'nope!'
+    end
+
+    # if correct.positive? && contains.zero?
+    #   if guess.all?(guess.first)
+    #     # remove all combinations that don't have exactly the correct many
+    #     @combinations.select! do |combo|
+    #       combo.count(guess.first) == correct
+    #     end
+    #     @must_have[guess.first] = correct
+    #   else
+    #     # remove combinations that don't exactly match
+    #     uniq = guess.uniq
+    #     if correct == 2
+    #       @combinations.select! do |combo|
+    #         combo.count(uniq[0]) == 2 || combo.count(uniq[1]) == 2
+    #       end
+    #     else
+    #       @combinations.select! do |combo|
+    #         has = true
+    #         uniq.each do |e|
+    #           has = false if combo.count(e) < correct
+    #         end
+    #         has
+    #       end
+    #     end
+
+    # remove all combinations that don't match what must be contained
+    #     @combinations.select! do |combo|
+    #       has = true
+    #       @must_have.each do |key, value|
+    #         has = false if combo.count(key) != value
+    #       end
+    #       has
+    #     end
+    #   end
+    # end
+
+    @combinations.compact!
+    p @combinations.count
+    @next_guess = @combinations.first
   end
 
   private
@@ -143,7 +219,10 @@ class Computer < Guess
   end
 end
 
-def play(code_count, max_rounds, colors)
+def play(code_count, max_rounds, colors, played)
+  played += 1
+  return if played > 50
+
   puts 'Welcome to mastermind!'
   puts 'Guess a 4 color code that consists of the following colors:'
   puts colors.map(&:to_s).join(' ')
@@ -159,17 +238,19 @@ def play(code_count, max_rounds, colors)
     round = game.play_round(guess)
     if round.nil?
       puts "You lose #{plr.name}! Too many tries"
+      play(code_count, max_rounds, colors, played)
       break
     end
 
-    puts "#{'Correct'.colorize(:green)}: #{round[0]} | #{'Contains'.colorize(:yellow)} #{round[1]}"
+    plr.receive_guess(guess, round[0], round[1])
 
     # check if player won the match
-    if round[0] == code_count && round[1] == 0
-      puts "You won #{plr.name}! Congratulations!"
-      break
-    end
+    next unless round[0] == code_count && round[1].zero?
+
+    puts "You won #{plr.name}! Congratulations! It took #{game.rounds_played} tries." # okay
+    # play(code_count, max_rounds, colors, played)
+    break
   end
 end
 
-play(4, MAX_ROUNDS, COLORS)
+play(4, MAX_ROUNDS, COLORS, 0)
