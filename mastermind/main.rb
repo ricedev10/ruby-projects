@@ -127,7 +127,8 @@ class Computer < Guess
     @colors = colors
     @combinations = permutations(count)
     @next_guess = [@colors.first, @colors.first, @colors[1], @colors[1]]
-    @must_have = {}
+    @prediction = []
+    @possibilities = []
 
     super
   end
@@ -148,9 +149,16 @@ class Computer < Guess
     return if correct == 4
 
     p guess
-    p @combinations.count
-    p "contains #{contains}, correct: #{correct}"
+    puts "contains #{contains}, correct: #{correct}, before: #{@combinations.count}".colorize(:green)
     @combinations.delete_at(0)
+
+    if correct + contains == 4
+      # remove all but the ones that do have these colors
+      @combinations.select! do |combo|
+        combo.difference(guess).count.zero?
+      end
+    end
+
     if correct.positive? || contains.positive?
       # remove all combinations that do not contain the guess colors
       @combinations.select! do |combo|
@@ -169,26 +177,61 @@ class Computer < Guess
       end
     end
 
-    # if correct.zero? && contains.positive?
-    #   @combinations.select! do |combo|
-    #     4 - guess.difference(combo).count >= contains
-    #   end
-    # end
-
-    if contains.zero? && correct.positive?
+    if correct.positive? || contains.positive?
       @combinations.select! do |combo|
-        has = false
-        guess.each do |color|
-          has = true if combo.count(color) >= correct
+        4 - guess.difference(combo).count >= (contains + correct)
+      end
+    end
+
+    if correct.positive?
+      # one or more color(s) must be in the proper correct position
+      @combinations.select! do |combo|
+        has = 0
+        guess.each_index do |i|
+          has += 1 if combo[i] == guess[i]
+        end
+        has >= correct
+      end
+    end
+    if contains.positive?
+      # one or more color(s) must be in the code
+      @combinations.select! do |combo|
+        4 - combo.difference(combo).count >= contains
+      end
+    end
+
+    # look through previous guesses, and find patterns
+    @guesses.each do |previous|
+      next unless previous[:contains] == contains &&
+                  previous[:correct] == correct &&
+                  strict_difference(previous[:guess], guess).compact.count == 1
+
+      index = strict_difference(previous[:guess], guess)[0]
+      @combinations.select! do |combo|
+        combo.any?(guess[index]) || combo.any?(previous[:guess][index])
+      end
+    end
+
+    # look through possibilities and find matches
+    possible = [@possibilities[0]].flatten!
+    @possibilities.each do |possibility|
+      possible = possibility.intersection(possible)
+    end
+    if possible
+      @combinations.select! do |combo|
+        has = true
+        possible.each do |color|
+          has = false if combo.none?(color)
         end
         has
       end
     end
 
     @combinations.compact!
-    p @combinations.count
     @next_guess = @combinations.first
-    p 'done! - next'
+    @guesses << { guess: guess, correct: correct, contains: contains }
+    @possibilities << guess if contains.positive? || correct.positive?
+    puts "DONE (next), now has: #{@combinations.count}".colorize(:magenta)
   end
 
   private
@@ -200,6 +243,14 @@ class Computer < Guess
     end
 
     possibilities
+  end
+
+  def strict_difference(arr1, arr2)
+    diff = []
+    (arr1.count > arr2.count ? arr1 : arr2).each_index do |i|
+      diff << i if arr1[i] != arr2[i]
+    end
+    diff
   end
 end
 
