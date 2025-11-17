@@ -49,7 +49,6 @@ class Keypad
   def negate_code(code)
     leftover = Array.new(@code.count, nil)
     leftover.each_index do |i|
-      i += 1
       leftover[i] = @code[i] if @code[i] != code[i]
     end
     leftover
@@ -146,6 +145,8 @@ class Computer < Guess
   end
 
   def receive_guess(guess, correct, contains)
+    return if correct == 4
+
     p guess
     p @combinations.count
     p "contains #{contains}, correct: #{correct}"
@@ -155,56 +156,39 @@ class Computer < Guess
       @combinations.select! do |combo|
         combo.intersect?(guess)
       end
-      p @combinations.count
-      p 'uh oh'
     elsif correct.zero? && contains.zero?
       # remove all combinations that DO contain the guess colors
       @combinations.reject! do |combo|
         combo.intersect?(guess)
       end
-      p @combinations.count
-      p(correct, contains)
-      p 'nope!'
     end
 
-    # if correct.positive? && contains.zero?
-    #   if guess.all?(guess.first)
-    #     # remove all combinations that don't have exactly the correct many
-    #     @combinations.select! do |combo|
-    #       combo.count(guess.first) == correct
-    #     end
-    #     @must_have[guess.first] = correct
-    #   else
-    #     # remove combinations that don't exactly match
-    #     uniq = guess.uniq
-    #     if correct == 2
-    #       @combinations.select! do |combo|
-    #         combo.count(uniq[0]) == 2 || combo.count(uniq[1]) == 2
-    #       end
-    #     else
-    #       @combinations.select! do |combo|
-    #         has = true
-    #         uniq.each do |e|
-    #           has = false if combo.count(e) < correct
-    #         end
-    #         has
-    #       end
-    #     end
+    if contains.zero? && correct.positive? && guess.all?(guess.first)
+      @combinations.select! do |combo|
+        combo.count(guess.first) == correct
+      end
+    end
 
-    # remove all combinations that don't match what must be contained
-    #     @combinations.select! do |combo|
-    #       has = true
-    #       @must_have.each do |key, value|
-    #         has = false if combo.count(key) != value
-    #       end
-    #       has
-    #     end
+    # if correct.zero? && contains.positive?
+    #   @combinations.select! do |combo|
+    #     4 - guess.difference(combo).count >= contains
     #   end
     # end
+
+    if contains.zero? && correct.positive?
+      @combinations.select! do |combo|
+        has = false
+        guess.each do |color|
+          has = true if combo.count(color) >= correct
+        end
+        has
+      end
+    end
 
     @combinations.compact!
     p @combinations.count
     @next_guess = @combinations.first
+    p 'done! - next'
   end
 
   private
@@ -232,13 +216,13 @@ def play(code_count, max_rounds, colors, played)
   game = Mastermind.new(colors, max_rounds)
 
   loop do
-    plr = client
+    plr = ai
     guess = plr.guess
 
     round = game.play_round(guess)
     if round.nil?
       puts "You lose #{plr.name}! Too many tries"
-      play(code_count, max_rounds, colors, played)
+      # play(code_count, max_rounds, colors, played)
       break
     end
 
