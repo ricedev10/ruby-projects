@@ -17,12 +17,12 @@ class Hangman
     response.join
   end
 
-  def incorrect_guesses
-    response = []
-    @word.split('').each do |char|
-      response << (@guesses.include?(char) ? char : '_') << ' '
+  def incorrect
+    incorrect = []
+    @guesses.each do |char|
+      incorrect << char unless @word.match?(char)
     end
 
-    response.join
+    incorrect
   end
 end
