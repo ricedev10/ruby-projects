@@ -14,13 +14,18 @@ class Hangman
       response << (@guesses.include?(char) ? char : '_') << ' '
     end
 
-    return true if response.join == @word
-
     response.join
   end
 
   def check_word(word)
     @word == word
+  end
+
+  def won?
+    @word.split('').each do |char|
+      return false unless @guesses.any?(char)
+    end
+    true
   end
 
   def incorrect
