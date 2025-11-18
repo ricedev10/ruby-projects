@@ -2,17 +2,20 @@ require 'colorize'
 
 # Hangman game; guess letters/words and keeps tracks of guesses
 class Hangman
+  attr_reader :attempts
+
   def initialize(word)
     @word = word.downcase
     @guesses = []
+    @attempts = 0
   end
 
   def guess_letter(letter)
-    @guesses << letter.downcase if @guesses.none?(letter)
+    (@guesses << letter.downcase and @attempts += 1) if @guesses.none?(letter)
   end
 
   def guess_word(word)
-    @guesses << word.downcase if @guesses.none?(word)
+    (@guesses << word.downcase and @attempts += 1) if @guesses.none?(word)
   end
 
   def status
