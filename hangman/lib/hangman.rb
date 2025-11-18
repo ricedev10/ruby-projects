@@ -21,7 +21,7 @@ class Hangman
   def status
     response = []
     @word.split('').each do |char|
-      response << (@guesses.include?(char) ? char.colorize(:green) : '_')
+      response << (@guesses.include?(char) ? char.colorize(:green) : '_') << ' '
     end
 
     response.join
