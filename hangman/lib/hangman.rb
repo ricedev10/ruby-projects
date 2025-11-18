@@ -4,8 +4,12 @@ class Hangman
     @guesses = []
   end
 
-  def guess(letter)
+  def guess_letter(letter)
     @guesses << letter.downcase
+  end
+
+  def guess_word(word)
+    @guesses << word.downcase
   end
 
   def status
@@ -17,11 +21,9 @@ class Hangman
     response.join
   end
 
-  def check_word(word)
-    @word == word
-  end
-
   def won?
+    return true if @guesses.any?(@word)
+
     @word.split('').each do |char|
       return false unless @guesses.any?(char)
     end
