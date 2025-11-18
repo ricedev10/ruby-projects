@@ -14,6 +14,8 @@ class Hangman
       response << (@guesses.include?(char) ? char : '_') << ' '
     end
 
+    return true if response.join == @word
+
     response.join
   end
 
