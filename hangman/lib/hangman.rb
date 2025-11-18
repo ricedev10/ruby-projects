@@ -5,11 +5,11 @@ class Hangman
   end
 
   def guess_letter(letter)
-    @guesses << letter.downcase
+    @guesses << letter.downcase if @guesses.none?(letter)
   end
 
   def guess_word(word)
-    @guesses << word.downcase
+    @guesses << word.downcase if @guesses.none?(word)
   end
 
   def status
