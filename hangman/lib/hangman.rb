@@ -19,6 +19,10 @@ class Hangman
     response.join
   end
 
+  def check_word(word)
+    @word == word
+  end
+
   def incorrect
     incorrect = []
     @guesses.each do |char|
