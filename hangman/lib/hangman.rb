@@ -1,3 +1,6 @@
+require 'colorize'
+
+# Hangman game; guess letters/words and keeps tracks of guesses
 class Hangman
   def initialize(word)
     @word = word.downcase
@@ -15,7 +18,7 @@ class Hangman
   def status
     response = []
     @word.split('').each do |char|
-      response << (@guesses.include?(char) ? char : '_') << ' '
+      response << (@guesses.include?(char) ? char.colorize(:green) : '_')
     end
 
     response.join
