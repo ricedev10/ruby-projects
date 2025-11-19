@@ -1,4 +1,5 @@
 require 'colorize'
+require 'json'
 
 # Hangman game; guess letters/words and keeps tracks of guesses
 class Hangman
@@ -43,5 +44,19 @@ class Hangman
     end
 
     incorrect
+  end
+
+  def data
+    {
+      word: @word,
+      guesses: @guesses,
+      attempts: @attempts
+    }
+  end
+
+  def load(data)
+    @word = data['word']
+    @guesses = data['guesses']
+    @attempts = data['attempts']
   end
 end
