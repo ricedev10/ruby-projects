@@ -3,8 +3,6 @@ require_relative 'lib/dictionary'
 require_relative 'lib/hangman'
 require_relative 'lib/save'
 
-App.new
-
 # start a hangman game, save games and load previous saves
 class App
   def initialize
@@ -15,6 +13,7 @@ class App
       (5..12).include?(line.chomp.length)
     end
     @game = Hangman.new(new_word)
+    @save_index = 0
 
     puts 'Welcome to hangman!'
     puts 'Press 1 to play'
@@ -46,9 +45,13 @@ class App
     puts 'Enter 0 at any time to exit'
 
     loop do
+      puts @game.status
+
       input = gets.chomp
+      return if input == '0'
+
       if input == '1'
-        @saves.add_save(@game.data)
+        @saves.save(@game.data, @save_index)
         @saves.serialize
       end
       if input.length == 1
@@ -56,9 +59,7 @@ class App
       else
         @game.guess_word(input)
       end
-      status = @game.status
 
-      puts status
       puts "Attempts: #{@game.attempts}"
       puts "Guessed: #{@game.incorrect}"
       (puts 'You won!' and break) if @game.won?
@@ -73,5 +74,8 @@ class App
     save_file = integer_input(0..@saves.saves.count)
     data = @saves.saves[save_file]
     @game.load(data)
+    @save_index = save_file
   end
 end
+
+App.new
