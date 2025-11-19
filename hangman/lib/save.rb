@@ -22,6 +22,11 @@ class Save
     serialize if @autosave
   end
 
+  def save(obj, index)
+    @saves[index] = obj
+    serialize if @autosave
+  end
+
   def serialize
     @saves.each_index do |i|
       @saves[i]['dir'] = @relative_dir
