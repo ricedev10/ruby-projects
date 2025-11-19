@@ -6,11 +6,13 @@ class Save
 
   def initialize(dir)
     Dir.mkdir(dir) unless Dir.exist?(dir)
-    @dir = dir
+    @dir = Pathname(dir).realpath
+    @relative_dir = @dir.relative_path_from(Pathname(__FILE__).realpath)
     @saves = []
 
     load_saves
-    p @saves
+    p @dir
+    p @relative_dir
   end
 
   def add_save(obj)
@@ -21,7 +23,7 @@ class Save
 
   def serialize
     @saves.each_index do |i|
-      @saves[i]['dir'] = @dir
+      @saves[i]['dir'] = @relative_dir
       content = JSON.dump(@saves[i])
       File.write(File.join(@dir, "#{i}.json"), content)
     end
@@ -31,8 +33,8 @@ class Save
     obj = JSON.parse(File.read(path))
     return unless obj.is_a?(Hash) && obj['dir']
 
-    @saves << obj if Pathname.new(obj['dir']).realpath == Pathname.new(@dir).realpath
-  rescue JSON::ParserError => e
+    @saves << obj if Pathname.new(obj['dir']) == @relative_dir
+  rescue JSON::ParserError
     puts "Could not parse json: #{path}"
   end
 
