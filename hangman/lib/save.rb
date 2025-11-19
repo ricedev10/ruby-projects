@@ -3,22 +3,23 @@ require 'pathname'
 
 class Save
   attr_reader :saves
+  attr_accessor :autosave
 
   def initialize(dir)
     Dir.mkdir(dir) unless Dir.exist?(dir)
     @dir = Pathname(dir).realpath
     @relative_dir = @dir.relative_path_from(Pathname(__FILE__).realpath)
     @saves = []
+    @autosave = true
 
     load_saves
-    p @dir
-    p @relative_dir
   end
 
   def add_save(obj)
     raise(TypeError) unless obj.is_a?(Hash)
 
     @saves << obj
+    serialize if @autosave
   end
 
   def serialize
