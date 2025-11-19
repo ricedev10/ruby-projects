@@ -13,8 +13,15 @@ class Save
     p @saves
   end
 
+  def add_save(obj)
+    raise(TypeError) unless obj.is_a?(Hash)
+
+    @saves << obj
+  end
+
   def serialize
     @saves.each_index do |i|
+      @saves[i]['dir'] = @dir
       content = JSON.dump(@saves[i])
       File.write(File.join(@dir, "#{i}.json"), content)
     end
