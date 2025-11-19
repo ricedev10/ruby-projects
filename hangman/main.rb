@@ -3,16 +3,9 @@ require_relative 'lib/dictionary'
 require_relative 'lib/hangman'
 require_relative 'lib/save'
 
-saves = Save.new File.join(File.dirname(__FILE__), 'saves')
+App.new
 
-words_file = File.open(File.join(File.dirname(__FILE__), './assets/words.txt'))
-words = Dictionary.new(words_file) do |line|
-  (5..12).include?(line.chomp.length)
-end
-
-answer = words.random_word
-game = Hangman.new(answer)
-
+# start a hangman game, save games and load previous saves
 class App
   def initialize
     @saves = Save.new File.join(File.dirname(__FILE__), 'saves')
@@ -27,10 +20,10 @@ class App
     puts 'Press 1 to play'
     puts 'Press 2 to load game'
 
-    option = integer_input(1..2)
-    if option == 1
+    case integer_input(1..2)
+    when 1
       play_game
-    elsif option == 2
+    when 2
       load_game
       play_game
     end
@@ -82,5 +75,3 @@ class App
     @game.load(data)
   end
 end
-
-App.new
