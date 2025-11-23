@@ -58,7 +58,57 @@ class RecursionExamples
     end
     sequence
   end
+
+  def fibs_rec(num, seq = [0, 1])
+    return seq if seq.length == num
+
+    seq << seq[-1] + seq[-2]
+    fibs_rec(num, seq)
+  end
+
+  def merge_sort(array)
+    half = (array.length / 2).floor
+    left = array[0..(half - 1)]
+    right = array[half..]
+
+    left = merge_sort(left) if left.length > 1
+    right = merge_sort(right) if right.length > 1
+
+    merged = []
+    left_i = 0
+    right_i = 0
+    loop do
+      right_value = right[right_i]
+      left_value = left[left_i]
+      if right_value.nil?
+        merged += left[left_i..]
+        p merged
+        break
+      end
+      if left_value.nil?
+        merged += right[right_i..]
+        p merged
+        break
+      end
+
+      if left_value < right_value
+        merged << left_value
+        left_i += 1
+      else
+        merged << right_value
+        right_i += 1
+      end
+    end
+
+    merged
+  end
 end
 
 rec = RecursionExamples.new
 p rec.fibs(8)
+p rec.fibs_rec(8)
+
+arr = [4, 1, 5, 9, 129, 10, 10, 10, 9, 184, 13, 1]
+merged = rec.merge_sort(arr)
+p merged
+p merged.length == arr.length
