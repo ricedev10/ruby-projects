@@ -8,6 +8,7 @@ list.append('parrot')
 list.append('hamster')
 list.append('snake')
 list.append('turtle')
+list.prepend('first dog')
 puts list
 
 # test cases

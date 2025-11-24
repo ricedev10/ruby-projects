@@ -50,16 +50,8 @@ class LinkedList
     removed
   end
 
-  def change_head(value)
-    old_head = @head
-    new_head = Node.new(value)
-
-    new_head.next_node = old_head
-    @head = new_head
-  end
-
   def insert_at(value, index)
-    change_head(value) and return if index.zero?
+    prepend(value) and return if index.zero?
 
     pre_node = at_index(index - 1)
     post_node = pre_node.next_node
