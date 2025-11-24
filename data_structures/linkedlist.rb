@@ -41,24 +41,25 @@ class LinkedList
   end
 
   def pop
-    second_to_last = @head
     return if @head.next_node.nil?
 
+    second_to_last = @head
     second_to_last = second_to_last.next_node until second_to_last.next_node.next_node.nil?
     removed = second_to_last.next_node
     second_to_last.next_node = nil
     removed
   end
 
-  def insert_at(value, index)
-    if index.zero?
-      old_head = @head
-      new_head = Node.new(value)
+  def change_head(value)
+    old_head = @head
+    new_head = Node.new(value)
 
-      new_head.next_node = old_head
-      @head = new_head
-      return
-    end
+    new_head.next_node = old_head
+    @head = new_head
+  end
+
+  def insert_at(value, index)
+    change_head(value) and return if index.zero?
 
     pre_node = at_index(index - 1)
     post_node = pre_node.next_node
