@@ -50,6 +50,24 @@ class LinkedList
     second_to_last.next_node = nil
   end
 
+  def insert_at(value, index)
+    if index.zero?
+      old_head = @head
+      new_head = Node.new(value)
+
+      new_head.next_node = old_head
+      @head = new_head
+      return
+    end
+
+    pre_node = at_index(index - 1)
+    post_node = pre_node.next_node
+    new_node = Node.new(value)
+
+    new_node.next_node = post_node
+    pre_node.next_node = new_node
+  end
+
   def each
     return if @head.nil?
 
@@ -121,4 +139,6 @@ end
 puts list.contains('third')
 puts list.contains('none')
 puts list.find('fourth')
+puts list
+list.insert_at('INSERT', 3)
 puts list
