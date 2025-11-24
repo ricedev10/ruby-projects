@@ -37,9 +37,7 @@ class LinkedList
     match = @head
     match = match.next_node and i += 1 until i == index || match.next_node.nil?
 
-    return match if i == index
-
-    raise Error
+    match if i == index
   end
 
   def pop
@@ -47,7 +45,9 @@ class LinkedList
     return if @head.next_node.nil?
 
     second_to_last = second_to_last.next_node until second_to_last.next_node.next_node.nil?
+    removed = second_to_last.next_node
     second_to_last.next_node = nil
+    removed
   end
 
   def insert_at(value, index)
