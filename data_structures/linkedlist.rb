@@ -58,6 +58,14 @@ class LinkedList
     node = node.next_node and yield(node.value) until node.next_node.nil?
   end
 
+  def each_index
+    i = 0
+    each do |value|
+      yield(i, value)
+      i += 1
+    end
+  end
+
   def contains(value)
     each do |e|
       return true if e == value
@@ -67,11 +75,8 @@ class LinkedList
   end
 
   def find(value)
-    i = 0
-    each do |e|
+    each_index do |i, e|
       return i if e == value
-
-      i += 1
     end
   end
 
