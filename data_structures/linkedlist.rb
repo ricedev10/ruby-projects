@@ -68,6 +68,16 @@ class LinkedList
     pre_node.next_node = new_node
   end
 
+  def remove_at(index)
+    if index.zero?
+      @head = @head.next_node
+      return
+    end
+
+    pre_node = at_index(index - 1)
+    pre_node.next_node = pre_node.next_node&.next_node
+  end
+
   def each
     return if @head.nil?
 
@@ -141,4 +151,8 @@ puts list.contains('none')
 puts list.find('fourth')
 puts list
 list.insert_at('INSERT', 3)
+puts list
+list.remove_at(1)
+puts list
+list.remove_at(0)
 puts list
