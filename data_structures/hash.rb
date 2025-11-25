@@ -8,8 +8,8 @@ class HashMap
 
   def initialize
     @capacity = 16
-    @factor = 0.75
-    @buckets = Array.new(@capacity, nil)
+    @load_factor = 0.75
+    @buckets = Buckets.new
   end
 
   def hash(key)
@@ -26,9 +26,71 @@ class HashMap
     index = hash_code % @capacity
     raise IndexError if index.negative? || index > @capacity
 
-    @buckets[index] = value
+    bucket = @buckets.get_at(index) || @buckets.set_at(index, [])
+    bucket << Node.new(key, value)
+
+    p @buckets.length
+    grow_buckets if @buckets.length > (@load_factor * @capacity)
+  end
+
+  def get(key)
+    index = hash(key) % @capacity
+    bucket = @buckets.get_at(index)
+    return nil if bucket.nil?
+
+    bucket.each do |node|
+      return node.value if node.key == key
+    end
+    nil
+  end
+
+  def has?(key)
+    !get(key).nil?
+  end
+
+  def grow_buckets
+    puts 'TODO: Grow buckets'
+  end
+end
+
+# Storing a "bucket" which can be anything (bucket is an array for HashMap)
+class Buckets
+  attr_reader :length
+
+  def initialize
+    @array = []
+    @length = 0
+  end
+
+  def get_at(index)
+    @array[index]
+  end
+
+  def set_at(index, value)
+    @length += 1 if @array[index].nil?
+    @length -= 1 if value.nil?
+    @array[index] = value
+    value
+  end
+
+  def remove_at(index)
+    @length -= 1 if @array[index].nil?
+    @array[index] = nil
+  end
+end
+
+# stores key & value pairs
+class Node
+  attr_accessor :key, :value
+
+  def initialize(key, value)
+    @key = key
+    @value = value
   end
 end
 
 map = HashMap.new
 map.set('Name', 'Kai')
+p map.has?('Name')
+p map.has?('name')
+p map.get('Name')
