@@ -1,5 +1,3 @@
-require_relative 'linkedlist'
-
 # Custom implementation of a hash in ruby
 class HashMap
   # Question: Why don't we just use arrays instead of LinkedLists? How much
@@ -34,21 +32,29 @@ class HashMap
   end
 
   def keys
-    keys_array = []
+    all_keys = []
     each_node do |node|
-      keys_array << node.key
+      all_keys << node.key
     end
 
-    keys_array
+    all_keys
   end
 
   def values
-    values_array = []
+    all_values = []
     each_node do |node|
-      values_array << node.value
+      all_values << node.value
     end
 
-    values_array
+    all_values
+  end
+
+  def entries
+    all_entries = []
+    each_node do |node|
+      all_entries << [node.key, node.value]
+    end
+    all_entries
   end
 
   def get(key)
@@ -183,6 +189,7 @@ puts map
 map.set('frog', 'BLUE')
 p map.keys
 p map.values
+p map.entries
 puts map
 map.clear
 puts map
