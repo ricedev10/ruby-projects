@@ -1,5 +1,5 @@
-require_relative 'Buckets'
-require_relative 'Node'
+require_relative 'buckets'
+require_relative 'node'
 
 # Custom implementation of a hash in ruby
 class HashMap
@@ -126,37 +126,3 @@ class HashMap
     end
   end
 end
-
-map = HashMap.new
-map.set('apple', 'red')
-map.set('banana', 'yellow')
-map.set('carrot', 'orange')
-map.set('dog', 'brown')
-map.set('elephant', 'gray')
-map.set('frog', 'green')
-map.set('grape', 'purple')
-map.set('hat', 'black')
-map.set('ice cream', 'white')
-map.set('jacket', 'blue')
-map.set('kite', 'pink')
-map.set('lion', 'golden')
-map.set('asd', 'golden')
-map.set('b', 123)
-
-puts 'okay'
-map.set('THIS WILL GROW', 'golden')
-
-map.set('zvvvv MAP', 'golden')
-p map.get('b')
-
-map.set('a', 'golden')
-map.set('e', 'golden')
-map.set('g', 'golden')
-puts map.length
-
-map.remove('ice cream')
-map.remove('jacket')
-map.remove('kite')
-map.remove('lion')
-map.set('frog', 'BLUE')
-puts map
