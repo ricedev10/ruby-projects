@@ -93,7 +93,7 @@ class HashMap
   end
 
   def grow_buckets
-    puts 'TODO: Grow buckets'
+    @capacity *= 2
   end
 
   def to_s
@@ -140,19 +140,23 @@ map.set('ice cream', 'white')
 map.set('jacket', 'blue')
 map.set('kite', 'pink')
 map.set('lion', 'golden')
+map.set('asd', 'golden')
+map.set('b', 123)
+
+puts 'okay'
+map.set('THIS WILL GROW', 'golden')
+
+map.set('zvvvv MAP', 'golden')
+p map.get('b')
+
+map.set('a', 'golden')
+map.set('e', 'golden')
+map.set('g', 'golden')
 puts map.length
 
 map.remove('ice cream')
 map.remove('jacket')
 map.remove('kite')
 map.remove('lion')
-puts map.length
-puts map
 map.set('frog', 'BLUE')
-p map.keys
-p map.values
-p map.entries
 puts map
-map.clear
-puts map
-puts map.length
