@@ -58,6 +58,10 @@ class HashMap
     end
   end
 
+  def clear
+    @buckets.clear
+  end
+
   def grow_buckets
     puts 'TODO: Grow buckets'
   end
@@ -117,6 +121,10 @@ class Buckets
       yield(value) unless value.nil?
     end
   end
+
+  def clear
+    @array.clear
+  end
 end
 
 # stores key & value pairs
@@ -149,4 +157,6 @@ map.remove('kite')
 map.remove('lion')
 puts map
 map.set('frog', 'BLUE')
+puts map
+map.clear
 puts map
