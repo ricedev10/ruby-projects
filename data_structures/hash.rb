@@ -27,7 +27,8 @@ class HashMap
     raise IndexError if index.negative? || index > @capacity
 
     bucket = @buckets.get_at(index) || @buckets.set_at(index, [])
-    bucket << Node.new(key, value)
+
+    add_to_bucket(bucket, key, value)
 
     grow_buckets if @buckets.length > (@load_factor * @capacity)
   end
@@ -70,6 +71,19 @@ class HashMap
     end
 
     msg += '}'
+  end
+
+  private
+
+  def add_to_bucket(bucket, key, value)
+    added_key = false
+    bucket.each do |node|
+      if node.key == key
+        node.value = value
+        added_key = true
+      end
+    end
+    bucket << Node.new(key, value) unless added_key
   end
 end
 
@@ -133,4 +147,6 @@ map.remove('ice cream')
 map.remove('jacket')
 map.remove('kite')
 map.remove('lion')
+puts map
+map.set('frog', 'BLUE')
 puts map
