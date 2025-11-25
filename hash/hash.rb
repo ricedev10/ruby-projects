@@ -1,3 +1,6 @@
+require_relative 'Buckets'
+require_relative 'Node'
+
 # Custom implementation of a hash in ruby
 class HashMap
   # Question: Why don't we just use arrays instead of LinkedLists? How much
@@ -118,52 +121,6 @@ class HashMap
     @buckets.each do |bucket|
       bucket.each(&block)
     end
-  end
-end
-
-# Storing a "bucket" which can be anything (bucket is an array for HashMap)
-class Buckets
-  attr_reader :length
-
-  def initialize
-    @array = []
-    @length = 0
-  end
-
-  def get_at(index)
-    @array[index]
-  end
-
-  def set_at(index, value)
-    @length += 1 if @array[index].nil?
-    @length -= 1 if value.nil?
-    @array[index] = value
-    value
-  end
-
-  def remove_at(index)
-    @length -= 1 if @array[index].nil?
-    @array[index] = nil
-  end
-
-  def each
-    @array.each do |value|
-      yield(value) unless value.nil?
-    end
-  end
-
-  def clear
-    @array.clear
-  end
-end
-
-# stores key & value pairs
-class Node
-  attr_accessor :key, :value
-
-  def initialize(key, value)
-    @key = key
-    @value = value
   end
 end
 
