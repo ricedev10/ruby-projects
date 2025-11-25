@@ -29,7 +29,6 @@ class HashMap
     bucket = @buckets.get_at(index) || @buckets.set_at(index, [])
     bucket << Node.new(key, value)
 
-    p @buckets.length
     grow_buckets if @buckets.length > (@load_factor * @capacity)
   end
 
@@ -48,8 +47,29 @@ class HashMap
     !get(key).nil?
   end
 
+  def remove(key)
+    index = hash(key) % @capacity
+    bucket = @buckets.get_at(index)
+    return nil if bucket.nil?
+
+    bucket.each_index do |index|
+      bucket.delete_at(index) and break if bucket[index].key == key
+    end
+  end
+
   def grow_buckets
     puts 'TODO: Grow buckets'
+  end
+
+  def to_s
+    msg = "{\n"
+    @buckets.each do |bucket|
+      bucket.each do |node|
+        msg += "  #{node.key} = #{node.value}\n"
+      end
+    end
+
+    msg += '}'
   end
 end
 
@@ -77,6 +97,12 @@ class Buckets
     @length -= 1 if @array[index].nil?
     @array[index] = nil
   end
+
+  def each
+    @array.each do |value|
+      yield(value) unless value.nil?
+    end
+  end
 end
 
 # stores key & value pairs
@@ -90,7 +116,21 @@ class Node
 end
 
 map = HashMap.new
-map.set('Name', 'Kai')
-p map.has?('Name')
-p map.has?('name')
-p map.get('Name')
+map.set('apple', 'red')
+map.set('banana', 'yellow')
+map.set('carrot', 'orange')
+map.set('dog', 'brown')
+map.set('elephant', 'gray')
+map.set('frog', 'green')
+map.set('grape', 'purple')
+map.set('hat', 'black')
+map.set('ice cream', 'white')
+map.set('jacket', 'blue')
+map.set('kite', 'pink')
+map.set('lion', 'golden')
+
+map.remove('ice cream')
+map.remove('jacket')
+map.remove('kite')
+map.remove('lion')
+puts map
