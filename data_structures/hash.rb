@@ -33,6 +33,24 @@ class HashMap
     grow_buckets if @buckets.length > (@load_factor * @capacity)
   end
 
+  def keys
+    keys_array = []
+    each_node do |node|
+      keys_array << node.key
+    end
+
+    keys_array
+  end
+
+  def values
+    values_array = []
+    each_node do |node|
+      values_array << node.value
+    end
+
+    values_array
+  end
+
   def get(key)
     index = hash(key) % @capacity
     bucket = @buckets.get_at(index)
@@ -88,6 +106,12 @@ class HashMap
       end
     end
     bucket << Node.new(key, value) unless added_key
+  end
+
+  def each_node(&block)
+    @buckets.each do |bucket|
+      bucket.each(&block)
+    end
   end
 end
 
@@ -157,6 +181,8 @@ map.remove('kite')
 map.remove('lion')
 puts map
 map.set('frog', 'BLUE')
+p map.keys
+p map.values
 puts map
 map.clear
 puts map
