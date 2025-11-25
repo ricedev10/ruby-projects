@@ -6,11 +6,13 @@ class HashMap
   # Question: Why don't we just use arrays instead of LinkedLists? How much
   # more performant (in speed/memory) are arrays compared to a ruby
   # implementation of LinkedLists?
+  attr_reader :length
 
   def initialize
     @capacity = 16
     @load_factor = 0.75
     @buckets = Buckets.new
+    @length = 0
   end
 
   def hash(key)
@@ -31,7 +33,7 @@ class HashMap
 
     add_to_bucket(bucket, key, value)
 
-    grow_buckets if @buckets.length > (@load_factor * @capacity)
+    grow_buckets if @length > (@load_factor * @capacity)
   end
 
   def keys
@@ -81,12 +83,13 @@ class HashMap
     return nil if bucket.nil?
 
     bucket.each_index do |index|
-      bucket.delete_at(index) and break if bucket[index].key == key
+      bucket.delete_at(index) and @length -= 1 and break if bucket[index].key == key
     end
   end
 
   def clear
     @buckets.clear
+    @length = 0
   end
 
   def grow_buckets
@@ -114,7 +117,7 @@ class HashMap
         added_key = true
       end
     end
-    bucket << Node.new(key, value) unless added_key
+    bucket << Node.new(key, value) and @length += 1 unless added_key
   end
 
   def each_node(&block)
@@ -137,11 +140,13 @@ map.set('ice cream', 'white')
 map.set('jacket', 'blue')
 map.set('kite', 'pink')
 map.set('lion', 'golden')
+puts map.length
 
 map.remove('ice cream')
 map.remove('jacket')
 map.remove('kite')
 map.remove('lion')
+puts map.length
 puts map
 map.set('frog', 'BLUE')
 p map.keys
@@ -150,3 +155,4 @@ p map.entries
 puts map
 map.clear
 puts map
+puts map.length
