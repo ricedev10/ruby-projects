@@ -12,14 +12,14 @@ class Buckets
   end
 
   def set_at(index, value)
-    @length += 1 if @array[index].nil?
-    @length -= 1 if value.nil?
+    @length += 1 if @array[index].nil? && !value.index.nil?
+    @length -= 1 if value.nil? && !@array[index].nil?
     @array[index] = value
     value
   end
 
   def remove_at(index)
-    @length -= 1 if @array[index].nil?
+    @length -= 1 unless @array[index].nil?
     @array[index] = nil
   end
 
@@ -31,5 +31,6 @@ class Buckets
 
   def clear
     @array.clear
+    @length = 0
   end
 end
