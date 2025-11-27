@@ -94,6 +94,16 @@ class HashMap
 
   def grow_buckets
     @capacity *= 2
+
+    # rehash entries
+    @length = 0
+    old_buckets = @buckets
+    @buckets = Buckets.new
+    old_buckets.each do |bucket|
+      bucket.each do |node|
+        set(node.key, node.value)
+      end
+    end
   end
 
   def to_s
