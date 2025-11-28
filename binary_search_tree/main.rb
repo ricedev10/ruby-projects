@@ -132,6 +132,24 @@ class Tree
     height(new_queue, depth + 1)
   end
 
+  def balanced?(root = @root)
+    return true if root.nil?
+
+    left_height = root.left.nil? ? 0 : height([root.left])
+    right_height = root.right.nil? ? 0 : height([root.right])
+    diff = (left_height - right_height).abs
+    diff <= 1 && balanced?(root.left) && balanced?(root.right)
+  end
+
+  def rebalance
+    values = []
+    inorder do |node|
+      values << node.data
+    end
+
+    @root = build_tree(values)
+  end
+
   def to_s
     pretty_print(@root)
   end
@@ -143,18 +161,6 @@ class Tree
   end
 end
 
-new_tree = Tree.new([0, 1, 3, 4, 5, 6, 7])
+new_tree = Tree.new(Array.new(15) { rand(1..100) })
 new_tree.pretty_print
-
-new_tree.level_order do |node|
-  p node.data
-end
-puts '----'
-new_tree.level_order_recursive do |node|
-  p node.data
-end
-puts '-----'
-new_tree.preorder do |node|
-  puts node.data
-end
-p "depth: #{new_tree.height}"
+puts new_tree.balanced?
