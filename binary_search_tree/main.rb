@@ -99,6 +99,27 @@ class Tree
     level_order_recursive(new_queue, &block) if new_queue.length.positive?
   end
 
+  def preorder(node = @root, &block)
+    # value, left, right
+    yield node
+    preorder(node.left, &block) if node.left
+    preorder(node.right, &block) if node.right
+  end
+
+  def inorder(node = @root, &block)
+    # left, value, right
+    inorder(node.left, &block) if node.left
+    yield node
+    inorder(node.right, &block) if node.right
+  end
+
+  def postorder(node = @root, &block)
+    # left, right, value
+    postorder(node.left, &block) if node.left
+    postorder(node.right, &block) if node.right
+    yield node
+  end
+
   def to_s
     pretty_print(@root)
   end
@@ -110,11 +131,7 @@ class Tree
   end
 end
 
-new_tree = Tree.new([0, 1, 3, 4])
-new_tree.pretty_print
-new_tree.insert(2)
-new_tree.pretty_print
-new_tree.delete(4)
+new_tree = Tree.new([0, 1, 3, 4, 5, 6])
 new_tree.pretty_print
 
 new_tree.level_order do |node|
@@ -123,4 +140,8 @@ end
 puts '----'
 new_tree.level_order_recursive do |node|
   p node.data
+end
+puts '-----'
+new_tree.preorder do |node|
+  puts node.data
 end
