@@ -96,7 +96,7 @@ class Tree
       new_queue << node.right if node.right
     end
 
-    level_order_recursive(new_queue, &block) if new_queue.length.positive?
+    level_order_recursive(new_queue, &block) unless new_queue.empty?
   end
 
   def preorder(node = @root, &block)
@@ -120,6 +120,18 @@ class Tree
     yield node
   end
 
+  def height(queue = [@root], depth = 0)
+    return depth if queue.empty?
+
+    new_queue = []
+    queue.each do |node|
+      new_queue << node.left if node.left
+      new_queue << node.right if node.right
+    end
+
+    height(new_queue, depth + 1)
+  end
+
   def to_s
     pretty_print(@root)
   end
@@ -131,7 +143,7 @@ class Tree
   end
 end
 
-new_tree = Tree.new([0, 1, 3, 4, 5, 6])
+new_tree = Tree.new([0, 1, 3, 4, 5, 6, 7])
 new_tree.pretty_print
 
 new_tree.level_order do |node|
@@ -145,3 +157,4 @@ puts '-----'
 new_tree.preorder do |node|
   puts node.data
 end
+p "depth: #{new_tree.height}"
