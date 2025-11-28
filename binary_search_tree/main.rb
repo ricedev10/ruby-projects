@@ -160,7 +160,3 @@ class Tree
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 end
-
-new_tree = Tree.new(Array.new(15) { rand(1..100) })
-new_tree.pretty_print
-puts new_tree.balanced?
