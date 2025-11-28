@@ -88,6 +88,17 @@ class Tree
     end
   end
 
+  def level_order_recursive(queue = [@root], &block)
+    new_queue = []
+    queue.each do |node|
+      block.call(node)
+      new_queue << node.left if node.left
+      new_queue << node.right if node.right
+    end
+
+    level_order_recursive(new_queue, &block) if new_queue.length.positive?
+  end
+
   def to_s
     pretty_print(@root)
   end
@@ -107,5 +118,9 @@ new_tree.delete(4)
 new_tree.pretty_print
 
 new_tree.level_order do |node|
+  p node.data
+end
+puts '----'
+new_tree.level_order_recursive do |node|
   p node.data
 end
