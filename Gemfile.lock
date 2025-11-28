@@ -2,6 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.3)
+    benchmark (0.5.0)
+    benchmark-ips (2.14.0)
     colorize (1.1.0)
     json (2.16.0)
     language_server-protocol (3.17.0.5)
@@ -38,6 +40,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  benchmark
+  benchmark-ips
   colorize
   rubocop
 

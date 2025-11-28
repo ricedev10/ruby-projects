@@ -6,3 +6,7 @@ source 'https://rubygems.org'
 gem 'rubocop', require: false
 
 gem 'colorize'
+
+gem 'benchmark'
+
+gem 'benchmark-ips'
