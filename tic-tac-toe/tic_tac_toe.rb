@@ -27,7 +27,7 @@ class TicTacToe
     # find straight patterns
     patterns = rows.union(columns).union(crosses)
     patterns.each do |row|
-      return true if row.all?(1) || row.all?(0)
+      return true if row.all? { |e| e == row[0] } && !row.all?(nil)
     end
 
     false
