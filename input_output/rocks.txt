@@ -1,0 +1,5 @@
+rare 100
+blue 10
+orange 24
+cool 15
+legendary 15
